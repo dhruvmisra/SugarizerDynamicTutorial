@@ -1,0 +1,10 @@
+{
+  "steps": {
+    "1": {
+      "title": "Create the activity from the template",
+      "content": [
+        "Sugarizer comes with an empty template that you could use as the base of your new activity. So first, copy all content of the Sugarizer `activities/ActivityTemplate` directory in a new directory called `activities/Pawn.activity`. Pawn will be the name for our new activity."
+      ]
+    }
+  }
+}
