@@ -5,6 +5,12 @@
       "content": [
         "Sugarizer comes with an empty template that you could use as the base of your new activity. So first, copy all content of the Sugarizer `activities/ActivityTemplate` directory in a new directory called `activities/Pawn.activity`. Pawn will be the name for our new activity."
       ]
+    },
+    "2": {
+      "title": "Customize icon and content",
+      "content": [
+        "Let's now improve our activity to customize the content."
+      ]
     }
   }
 }

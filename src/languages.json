@@ -1,0 +1,9 @@
+{
+  "VanillaJS": {
+    "steps": {
+      "2": {
+        "activityjs": "define([\"sugar-web/activity/activity\"], function (activity) {\n\n\t// Manipulate the DOM only when it is ready.\n\trequirejs(['domReady!'], function (doc) {\n\n\t\t// Initialize the activity.\n\t\tactivity.setup();\n\n\t});\n\n});"
+      }
+    }
+  }
+}

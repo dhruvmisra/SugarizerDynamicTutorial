@@ -1,40 +1,64 @@
 <template>
   <div id="app">
-    <h1>Sugarizer Dynamic Tutorial</h1>
-    <CodeSection :code="tutorial ? tutorial.steps[1].content[0] : ''" />
+    <h1 class="heading">Sugarizer Dynamic Tutorial</h1>
+    <LanguageSelector :selected="selectedLanguage" @languageSelected="switchLanguage" />
+    selectedLanguage: {{selectedLanguage}}
+    <StepSelector :stepNumbers="stepNumbers" :selected="selectedStep" @stepSelected="switchStep" />
+    <Step :step="stepToShow" />
   </div>
 </template>
 
 <script>
-import CodeSection from './components/CodeSection.vue'
-import Tutorial from '@/tutorial.json'
+import Step from './components/Step.vue';
+import LanguageSelector from './components/LanguageSelector.vue';
+import StepSelector from './components/StepSelector.vue';
+import Tutorial from '@/tutorial.json';
 
 export default {
   name: 'App',
+  components: {
+    Step,
+    LanguageSelector,
+    StepSelector
+  },
   data: () => ({
     tutorial: null,
-    code: `
-define(["sugar-web/activity/activity"], function (activity) {
-
-  // Manipulate the DOM only when it is ready.
-  requirejs(['domReady!'], function (doc) {
-
-    // Initialize the activity.
-    activity.setup();
-
-  });
-
-});
-    `
+    selectedLanguage: 'VanillaJS',
+    selectedStep: "1"
   }),
-  components: {
-    CodeSection
+  computed: {
+    stepNumbers() {
+      return Object.keys(this.tutorial.steps);
+    },
+    stepToShow() {
+      return this.tutorial.steps[this.selectedStep];
+    }
   },
-  mounted() {
+  created() {
     this.tutorial = Tutorial;
+  },
+  methods: {
+    switchLanguage(language) {
+      this.selectedLanguage = language;
+    },
+    switchStep(stepNum) {
+      this.selectedStep = stepNum;
+    }
   }
 }
 </script>
 
 <style>
+body {
+  margin: 0;
+  box-sizing: border-box;
+}
+#app {
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 20px 5vw;
+}
+.heading {
+  text-align: center;
+  color: rgb(153, 180, 180);
+}
 </style>
