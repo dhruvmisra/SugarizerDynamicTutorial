@@ -3,8 +3,11 @@ module.exports = {
     module: {
       rules: [ {
         test: /\.md$/,
-       loader: 'raw-loader', // npm install -D raw-loader
+       loader: 'raw-loader',
       }]
     }
-  }
+  },
+  publicPath: process.env.NODE_ENV === 'production'
+    ? '/SugarizerDynamicTutorial/'
+    : '/'
 }

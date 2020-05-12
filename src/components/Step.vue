@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>{{ step.title }}</h1>
-    <Content :file="step.file" :key="selectedStep" />
+    <Content :file="step.file" :dictionary="dictionary" :key="selectedStep" />
   </div>
 </template>
 
@@ -14,7 +14,8 @@ export default {
   },
   props: {
     step: Object,
-    selectedStep: String
+    selectedStep: String,
+    dictionary: Object
   }
 }
 </script>

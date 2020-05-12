@@ -17,10 +17,7 @@
 
 <script>
 export default {
-  props: ["selected"],
-  data: () => ({
-    languages: ["VanillaJS", "Vue.js", "React"]
-  })
+  props: ["languages", "selected"]
 };
 </script>
 

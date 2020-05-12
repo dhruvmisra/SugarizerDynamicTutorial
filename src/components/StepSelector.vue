@@ -12,10 +12,7 @@
 
 <script>
 export default {
-  props: ["stepNumbers", "selected"],
-  data: () => ({
-    languages: ["VanillaJS", "Vue.js", "React"]
-  })
+  props: ["stepNumbers", "selected"]
 };
 </script>
 

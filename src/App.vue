@@ -1,22 +1,29 @@
 <template>
   <div id="app">
     <h1 class="heading">Sugarizer Dynamic Tutorial</h1>
-    <LanguageSelector :selected="selectedLanguage" @languageSelected="switchLanguage" />
+    <LanguageSelector
+      :languages="languages"
+      :selected="selectedLanguage"
+      @languageSelected="switchLanguage"
+    />
     selectedLanguage: {{selectedLanguage}}
     <StepSelector :stepNumbers="stepNumbers" :selected="selectedStep" @stepSelected="switchStep" />
-    <Step :step="stepToShow" :selectedStep="selectedStep" />
+    <Step
+      :step="stepToShow"
+      :selectedStep="selectedStep"
+      :dictionary="codeDictionaries[selectedLanguage].steps[selectedStep]"
+    />
   </div>
 </template>
 
 <script>
-import Step from './components/Step.vue';
-import LanguageSelector from './components/LanguageSelector.vue';
-import StepSelector from './components/StepSelector.vue';
-import Tutorial from '@/tutorial.json';
-// import TutJS from '@/tutorial.js';
+import Step from "./components/Step.vue";
+import LanguageSelector from "./components/LanguageSelector.vue";
+import StepSelector from "./components/StepSelector.vue";
+import Tutorial from "@/tutorial.json";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
     Step,
     LanguageSelector,
@@ -24,8 +31,10 @@ export default {
   },
   data: () => ({
     tutorial: null,
-    selectedLanguage: 'VanillaJS',
-    selectedStep: "0"
+    codeDictionaries: {},
+    languages: ["VanillaJS", "VueJS"],
+    selectedLanguage: "VanillaJS",
+    selectedStep: "1"
   }),
   computed: {
     stepNumbers() {
@@ -36,7 +45,14 @@ export default {
     }
   },
   created() {
+    let vm = this;
     this.tutorial = Tutorial;
+    this.languages.forEach(language => {
+      vm.codeDictionaries[
+        language
+      ] = require(`@/assets/languages/${language}.js`).default;
+    });
+    console.log(this.codeDictionaries);
     // console.log(JSON.stringify(TutJS));
   },
   methods: {
@@ -47,7 +63,7 @@ export default {
       this.selectedStep = stepNum;
     }
   }
-}
+};
 </script>
 
 <style>

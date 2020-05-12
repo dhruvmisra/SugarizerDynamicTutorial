@@ -36,21 +36,7 @@ Then customize the activity using your text editor. Change the name for your act
 
 Use also your text editor to change the **title** tag of `index.html` to `Pawn Activity`.
 
-	<!DOCTYPE html>
-	<html>
-
-	<head>
-	<meta charset="utf-8" />
-	<title>Pawn Activity</title>
-	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width"/>
-	<link rel="stylesheet" media="not screen and (device-width: 1200px) and (device-height: 900px)"
-		href="lib/sugar-web/graphics/css/sugar-96dpi.css">
-	<link rel="stylesheet" media="screen and (device-width: 1200px) and (device-height: 900px)"
-		href="lib/sugar-web/graphics/css/sugar-200dpi.css">
-	<link rel="stylesheet" href="css/activity.css">
-	<script data-main="js/loader" src="lib/require.js"></script>
-	</head>
-	...
+<div class="code" id="indexTitle"></div>
 
 Finally, update the file `activities.json` at the root of the Sugarizer directory: add a new line for your activity. Update **id**, **name** and **directory** values on this new line to `org.sugarlabs.Pawn`, `Pawn` and `activities/Pawn.activity`.
 
