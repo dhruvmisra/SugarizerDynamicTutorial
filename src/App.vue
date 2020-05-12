@@ -4,7 +4,7 @@
     <LanguageSelector :selected="selectedLanguage" @languageSelected="switchLanguage" />
     selectedLanguage: {{selectedLanguage}}
     <StepSelector :stepNumbers="stepNumbers" :selected="selectedStep" @stepSelected="switchStep" />
-    <Step :step="stepToShow" />
+    <Step :step="stepToShow" :selectedStep="selectedStep" />
   </div>
 </template>
 
@@ -13,6 +13,7 @@ import Step from './components/Step.vue';
 import LanguageSelector from './components/LanguageSelector.vue';
 import StepSelector from './components/StepSelector.vue';
 import Tutorial from '@/tutorial.json';
+// import TutJS from '@/tutorial.js';
 
 export default {
   name: 'App',
@@ -24,7 +25,7 @@ export default {
   data: () => ({
     tutorial: null,
     selectedLanguage: 'VanillaJS',
-    selectedStep: "1"
+    selectedStep: "0"
   }),
   computed: {
     stepNumbers() {
@@ -36,6 +37,7 @@ export default {
   },
   created() {
     this.tutorial = Tutorial;
+    // console.log(JSON.stringify(TutJS));
   },
   methods: {
     switchLanguage(language) {

@@ -28,7 +28,7 @@ export default {
   padding: 5px 15px;
   margin: 5px;
   border: none;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); */
   cursor: pointer;
   transition: all 200ms ease;
 }

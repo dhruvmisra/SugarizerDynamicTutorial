@@ -1,20 +1,20 @@
 <template>
   <div>
     <h1>{{ step.title }}</h1>
-    <CodeSection :code="step.content[0]" :lang="'md'" />
+    <Content :file="step.file" :key="selectedStep" />
   </div>
 </template>
 
 <script>
-import CodeSection from './CodeSection';
+import Content from './Content';
 
 export default {
   components: {
-    CodeSection
+    Content
   },
   props: {
     step: Object,
-    code: String
+    selectedStep: String
   }
 }
 </script>
