@@ -13,6 +13,7 @@
       :selectedStep="selectedStep"
       :dictionary="codeDictionaries[selectedLanguage].steps[selectedStep]"
     />
+    <StepSelector :stepNumbers="stepNumbers" :selected="selectedStep" @stepSelected="switchStep" />
   </div>
 </template>
 
