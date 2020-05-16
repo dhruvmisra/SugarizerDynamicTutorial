@@ -17,22 +17,17 @@ export default {
     file: String,
     dictionary: Object
   },
-  watch: {
-    dictionary: function(newVal, oldVal) {
-      this.switchCode();
-    }
-  },
+  // watch: {
+  //   dictionary: function(newVal, oldVal) {
+  //     this.switchCode();
+  //   }
+  // },
   mounted() {
     const renderer = new marked.Renderer();
     renderer.code = (code, lang) => `<pre><code class="hljs ${lang || ''}">${this.doRenderCode(code, lang)}</code></pre>`;
 
     marked.setOptions({
       renderer,
-      // highlight: function(code, language) {
-      //   const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
-      //   return hljs.highlight(validLanguage, code).value;
-      // },
-      // langPrefix:'hljs ',
       pedantic: false,
       gfm: true,
       breaks: false,
@@ -49,7 +44,7 @@ export default {
       return lang ? hljs.highlight(lang, code, true).value : hljs.highlightAuto(code).value
     },
     parseContent() {
-      let content = require('@/assets/steps/' + this.file);
+      let content = require(`@/assets/${language}/${this.file}`);
       this.html = marked(content.default);
       let vm = this;
       this.$nextTick(() => {
@@ -57,14 +52,14 @@ export default {
       })
     },
 
-    switchCode() {
-      console.log(this.dictionary);
-      let codeElements = document.getElementsByClassName('code');
-      for(let element of codeElements) {
-        console.log(this.dictionary[element.id]);
-        element.innerHTML = `<pre><code class="hljs">${this.doRenderCode(this.dictionary[element.id].code, this.dictionary[element.id].lang)}</code></pre>`
-      }
-    }
+    // switchCode() {
+    //   console.log(this.dictionary);
+    //   let codeElements = document.getElementsByClassName('code');
+    //   for(let element of codeElements) {
+    //     console.log(this.dictionary[element.id]);
+    //     element.innerHTML = `<pre><code class="hljs">${this.doRenderCode(this.dictionary[element.id].code, this.dictionary[element.id].lang)}</code></pre>`
+    //   }
+    // }
   }
 }
 </script>

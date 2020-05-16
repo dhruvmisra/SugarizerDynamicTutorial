@@ -11,7 +11,7 @@
     <Step
       :step="stepToShow"
       :selectedStep="selectedStep"
-      :dictionary="codeDictionaries[selectedLanguage].steps[selectedStep]"
+      :language="selectedLanguage"
     />
     <StepSelector :stepNumbers="stepNumbers" :selected="selectedStep" @stepSelected="switchStep" />
   </div>
@@ -45,17 +45,16 @@ export default {
       return this.tutorial.steps[this.selectedStep];
     }
   },
-  created() {
-    let vm = this;
-    this.tutorial = Tutorial;
-    this.languages.forEach(language => {
-      vm.codeDictionaries[
-        language
-      ] = require(`@/assets/languages/${language}.js`).default;
-    });
-    console.log(this.codeDictionaries);
-    // console.log(JSON.stringify(TutJS));
-  },
+  // created() {
+  //   let vm = this;
+  //   this.tutorial = Tutorial;
+  //   this.languages.forEach(language => {
+  //     vm.codeDictionaries[
+  //       language
+  //     ] = require(`@/assets/languages/${language}.js`).default;
+  //   });
+  //   // console.log(JSON.stringify(TutJS));
+  // },
   methods: {
     switchLanguage(language) {
       this.selectedLanguage = language;

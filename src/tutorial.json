@@ -2,43 +2,43 @@
   "steps": {
     "0": {
       "title": "Set up the development environment",
-      "file": "tutorial_step0.md"
+      "file": "step0.md"
     },
     "1": {
       "title": "Create the activity from the template",
-      "file": "tutorial_step1.md"
+      "file": "step1.md"
     },
     "2": {
       "title": "Customize icon and content",
-      "file": "tutorial_step2.md"
+      "file": "step2.md"
     },
     "3": {
       "title": "Add a toolbar button",
-      "file": "tutorial_step3.md"
+      "file": "step3.md"
     },
     "4": {
       "title": "Handle journal and datastore",
-      "file": "tutorial_step4.md"
+      "file": "step4.md"
     },
     "5": {
       "title": "Localize the activity",
-      "file": "tutorial_step5.md"
+      "file": "step5.md"
     },
     "6": {
       "title": "Handle multi-user with presence",
-      "file": "tutorial_step6.md"
+      "file": "step6.md"
     },
     "7": {
       "title": "Use journal chooser dialog",
-      "file": "tutorial_step7.md"
+      "file": "step7.md"
     },
     "8": {
       "title": "Create your own palette",
-      "file": "tutorial_step8.md"
+      "file": "step8.md"
     },
     "9": {
       "title": "Integrate a tutorial",
-      "file": "tutorial_step9.md"
+      "file": "step9.md"
     }
   }
 }
