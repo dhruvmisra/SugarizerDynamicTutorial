@@ -1,6 +1,6 @@
 *(Estimated time: 15mn)*
 
-Sugarizer comes with an empty template that you could use as the base of your new activity. So first, copy all content of the Sugarizer `activities/ActivityTemplate` directory in a new directory called `activities/Pawn.activity`. **Pawn** will be the name for our new activity.
+Sugarizer comes with an empty template that you could use as the base of your new activity. So first, copy all content of the Sugarizer `activities/ActivityTemplateVue` directory in a new directory called `activities/Pawn.activity`. **Pawn** will be the name for our new activity.
 
 
 ### File structure
@@ -13,6 +13,7 @@ In your new directory, you will find the following file structure:
 * `activity/` contains information about your activity, including the name, ID, and the icon.
 * `index.html` is where the elements that compose your activity are defined.  The template comes with a toolbar and a canvas where you can place your content.
 * `js/activity.js` is where the logic of your activity lives.
+* `js/components` contains all Sugar components which can be included and used to have a specific Sugar functionality.
 * `css/activity.css` is where you add the styling of your activity.
 
 Those are the files you'll modify in most cases. The others are:
@@ -42,13 +43,16 @@ Use your text editor to change the **title** tag of `index.html` to `Pawn Activi
 <head>
 	<meta charset="utf-8" />
 	<title>Pawn Activity</title>
-	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width"/>
+	<meta name="viewport"
+		content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, viewport-fit=cover" />
 	<link rel="stylesheet" media="not screen and (device-width: 1200px) and (device-height: 900px)"
-			href="lib/sugar-web/graphics/css/sugar-96dpi.css">
+		href="lib/sugar-web/graphics/css/sugar-96dpi.css">
 	<link rel="stylesheet" media="screen and (device-width: 1200px) and (device-height: 900px)"
-			href="lib/sugar-web/graphics/css/sugar-200dpi.css">
+		href="lib/sugar-web/graphics/css/sugar-200dpi.css">
 	<link rel="stylesheet" href="css/activity.css">
-	<script data-main="js/loader" src="lib/require.js"></script>
+	<link rel="stylesheet" href="css/libnotify.css">
+	<script src="lib/vue.min.js"></script>
+	<script src="lib/require.js"></script>
 </head>
 ...
 ```

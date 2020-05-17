@@ -5,7 +5,7 @@ We will run Sugarizer from a local directory that will contain all files needed.
 
 ### Create the Sugarizer directory
 
-To start, download **Sugarizer** from [here](https://github.com/llaske/sugarizer/archive/dev.zip). It's a 320Mb package so it could take some time. Once downloaded, unzip it.
+To start, download **Sugarizer** from [here](https://github.com/llaske/sugarizer/archive/dev.zip). It's a 320MB package so it could take some time. Once downloaded, unzip it.
 
 If you're familiar with **git**, you could clone the repository - dev branch - instead like this:
 ```shell
@@ -50,5 +50,3 @@ Let's start by opening the Sugarizer directory in your favorite editor. You shou
 ![](images/tutorial_step0_3.png)
 
 You're now ready to start.
-
-[Go to next step](tutorial_step1.md)

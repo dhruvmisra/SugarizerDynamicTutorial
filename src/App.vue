@@ -32,10 +32,9 @@ export default {
   },
   data: () => ({
     tutorial: null,
-    codeDictionaries: {},
     languages: ["VanillaJS", "VueJS"],
     selectedLanguage: "VanillaJS",
-    selectedStep: "1"
+    selectedStep: "0"
   }),
   computed: {
     stepNumbers() {
@@ -45,16 +44,10 @@ export default {
       return this.tutorial.steps[this.selectedStep];
     }
   },
-  // created() {
-  //   let vm = this;
-  //   this.tutorial = Tutorial;
-  //   this.languages.forEach(language => {
-  //     vm.codeDictionaries[
-  //       language
-  //     ] = require(`@/assets/languages/${language}.js`).default;
-  //   });
-  //   // console.log(JSON.stringify(TutJS));
-  // },
+  created() {
+    let vm = this;
+    this.tutorial = Tutorial;
+  },
   methods: {
     switchLanguage(language) {
       this.selectedLanguage = language;
@@ -72,8 +65,9 @@ body {
   box-sizing: border-box;
 }
 #app {
-  font-family: Arial, Helvetica, sans-serif;
-  padding: 20px 5vw;
+  /* font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  padding: 20px 10vw;
 }
 .heading {
   text-align: center;

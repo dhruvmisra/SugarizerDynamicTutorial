@@ -1,21 +1,16 @@
-[Go back to tutorial home](tutorial.md)
-
-
-# Step 0: set up the development environment
 *(Estimated time: 15mn)*
-
 
 For this tutorial, you will just need a browser and a text editor.
 We will run Sugarizer from a local directory that will contain all files needed.
 
 ### Create the Sugarizer directory
 
-To start, download **Sugarizer** from [here](https://github.com/llaske/sugarizer/archive/dev.zip). It's a 320Mb package so it could take some time. Once downloaded, unzip it.
+To start, download **Sugarizer** from [here](https://github.com/llaske/sugarizer/archive/dev.zip). It's a 260MB package so it could take some time. Once downloaded, unzip it.
 
 If you're familiar with **git**, you could clone the repository - dev branch - instead like this:
-
+```shell
 	git clone -b dev https://github.com/llaske/sugarizer
-
+```
 Whatever method used, you should have at end a Sugarizer directory like this:
 
 ![](images/tutorial_step0_2.png)

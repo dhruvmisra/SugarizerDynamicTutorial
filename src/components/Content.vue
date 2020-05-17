@@ -15,13 +15,8 @@ export default {
   }),
   props: {
     file: String,
-    dictionary: Object
+    language: String
   },
-  // watch: {
-  //   dictionary: function(newVal, oldVal) {
-  //     this.switchCode();
-  //   }
-  // },
   mounted() {
     const renderer = new marked.Renderer();
     renderer.code = (code, lang) => `<pre><code class="hljs ${lang || ''}">${this.doRenderCode(code, lang)}</code></pre>`;
@@ -44,43 +39,39 @@ export default {
       return lang ? hljs.highlight(lang, code, true).value : hljs.highlightAuto(code).value
     },
     parseContent() {
-      let content = require(`@/assets/${language}/${this.file}`);
+      let content = require(`@/assets/${this.language}/${this.file}`);
       this.html = marked(content.default);
-      let vm = this;
-      this.$nextTick(() => {
-        vm.switchCode();
-      })
-    },
-
-    // switchCode() {
-    //   console.log(this.dictionary);
-    //   let codeElements = document.getElementsByClassName('code');
-    //   for(let element of codeElements) {
-    //     console.log(this.dictionary[element.id]);
-    //     element.innerHTML = `<pre><code class="hljs">${this.doRenderCode(this.dictionary[element.id].code, this.dictionary[element.id].lang)}</code></pre>`
-    //   }
-    // }
+    }
   }
 }
 </script>
 
 <style>
 img {
-  width: 100%;
+  max-width: 100%;
 }
 pre {
   white-space: normal !important;
 }
 pre code {
-  padding: 1.25em 1em !important;
+  padding: 1.5em 1.4em !important;
 }
 code {
-  background: rgb(243, 243, 243);
+  color: rgb(241, 157, 0);
+  background: rgba(255, 166, 0, 0.1);
+  font-size: 1.05em;
   border-radius: 3px;
-  padding: 2px !important;
+  padding: 2px 4px !important;
+  vertical-align: center;
   white-space: pre-wrap !important;
 }
-/* :not(pre) > code[class*="language-"], pre[class*="language-"] {
-    background: #ffffff;
-} */
+blockquote {
+  padding: 1px 4px;
+  padding-left: 10px;
+  border-left: solid 6px rgb(86, 86, 197);
+  background: #F4F4F4;  
+}
+blockquote h4 {
+  margin-top: 0.5em;
+}
 </style>

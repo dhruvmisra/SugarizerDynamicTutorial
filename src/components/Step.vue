@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>{{ step.title }}</h1>
-    <Content :file="step.file" :language="selectedLanguage" :dictionary="dictionary" :key="selectedStep" />
+    <Content :file="step.file" :language="language" :key="language + selectedStep" />
   </div>
 </template>
 
