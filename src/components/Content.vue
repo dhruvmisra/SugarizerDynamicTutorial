@@ -68,8 +68,8 @@ code {
 blockquote {
   padding: 1px 4px;
   padding-left: 10px;
-  border-left: solid 6px rgb(86, 86, 197);
-  background: #F4F4F4;  
+  border-left: solid 6px rgb(86, 121, 197);
+  background: #f8f8f8;  
 }
 blockquote h4 {
   margin-top: 0.5em;

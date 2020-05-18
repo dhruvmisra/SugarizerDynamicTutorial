@@ -77,7 +77,7 @@ Once again we will have first to integrate a new component. So let's add the `Su
 ```html
     ...
     <sugar-journal ref="SugarJournal" v-on:journal-data-loaded="onJournalDataLoaded"></sugar-journal>
-    <sugar-localization ref="SugarLocalization"></sugar-localization>
+    <sugar-localization ref="SugarL10n"></sugar-localization>
   </div>
 
   <script src="js/Pawn.js"></script>
@@ -93,11 +93,11 @@ Now in `js/activity.js`, let's keep a data variable as a reference to this compo
 ```js
 data: {
   currentenv: null,
-  SugarLocalization: null,
+  SugarL10n: null,
   ...
 },
 mounted: function () {
-  this.SugarLocalization = this.$refs.SugarLocalization;
+  this.SugarL10n = this.$refs.SugarL10n;
 },
 ```
 
@@ -109,13 +109,13 @@ To get the localized version of a string, the webL10n framework provide a simple
 
 So for the welcome message, here is the line to write:
 ```js
-this.displayText = this.SugarLocalization.get("Hello", { name: this.currentenv.user.name });
+this.displayText = this.SugarL10n.get("Hello", { name: this.currentenv.user.name });
 ```
 As you could see the first `get` parameter is the id of the string (**Hello**) and the second parameter is a JavaScript object where each property is the name of the parameter (the one provided inside double curved brackets **\{\{\}\}**, **name** here). The result of the function is the string localized in the current language set in webL10n.
 
 In a same way, the pawn played message could be rewrite as: 
 ```js
-this.displayText = this.SugarLocalization.get("Played", { name: this.currentenv.user.name });
+this.displayText = this.SugarL10n.get("Played", { name: this.currentenv.user.name });
 ```
 
 To set localized titles to toolbar items, let's define a JavaScript object `l10n` which will store string id's of the strings we want (strings here should be static, i.e. without parameters)
@@ -127,11 +127,11 @@ data: {
   }
 }
 ```
-**NOTE:** *The string id's inside the object should be prefixed by the word "string". For example in this case we want the string for `AddPawn`, so in the object we will write `stringAddPawn: ''`.*
+***NOTE:*** *The string id's inside the object should be prefixed by the word "string". For example in this case we want the string for `AddPawn`, so in the object we will write `stringAddPawn: ''`.*
 
 We can localize this object by calling the `localize` method: 
 ```js
-this.SugarLocalization.localize(this.l10n);
+this.SugarL10n.localize(this.l10n);
 ```
 
 Let's bind this to the title of add-button:
@@ -149,16 +149,16 @@ initializeActivity: function () {
   this.currentenv = this.$refs.SugarActivity.getEnvironment();
 
   /*Set the event listener here */
-  this.SugarLocalization.$on('localized', this.localized());
+  this.SugarL10n.$on('localized', this.localized());
 },
 
 // Handles localized event
 localized: function () {
-  this.displayText = this.SugarLocalization.get("Hello", { name: this.currentenv.user.name });
-  this.SugarLocalization.localize(this.l10n);
+  this.displayText = this.SugarL10n.get("Hello", { name: this.currentenv.user.name });
+  this.SugarL10n.localize(this.l10n);
 },
 ```
-**NOTE:** *We define the event listener using `$on` in `initializeActivity()` rather than as a `v-on` directive on the `<sugar-localized>` tag to maintain the flow of the activity. Defining the event listener as a directive might cause the `localized()` method to be called BEFORE the `currentenv` is set. This will lead to undesired results.*
+***NOTE:*** *We define the event listener using `$on` in `initializeActivity()` rather than as a `v-on` directive on the `<sugar-localized>` tag to maintain the flow of the activity. Defining the event listener as a directive might cause the `localized()` method to be called BEFORE the `currentenv` is set. This will lead to undesired results.*
 
 Everything is now ready to handle localization.
 

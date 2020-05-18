@@ -10,10 +10,12 @@
     "core-js": "^3.6.4",
     "highlight.js": "^10.0.2",
     "marked": "^1.0.0",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue-router": "^3.1.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.3.0",
+    "@vue/cli-plugin-router": "^4.3.1",
     "@vue/cli-service": "~4.3.0",
     "raw-loader": "^4.0.1",
     "vue-template-compiler": "^2.6.11"

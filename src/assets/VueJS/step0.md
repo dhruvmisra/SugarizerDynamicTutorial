@@ -9,7 +9,7 @@ To start, download **Sugarizer** from [here](https://github.com/llaske/sugarizer
 
 If you're familiar with **git**, you could clone the repository - dev branch - instead like this:
 ```shell
-	git clone -b dev https://github.com/llaske/sugarizer
+git clone -b dev https://github.com/llaske/sugarizer
 ```
 Whatever method used, you should have at end a Sugarizer directory like this:
 

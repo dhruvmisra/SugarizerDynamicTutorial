@@ -6,14 +6,14 @@ In Step 6 of this tutorial, we've added a specific icon in the toolbar for the "
 
 ![](images/tutorial_step8_1.png)
 
-As we've seen briefly in Step 6, to handle this feature Sugar-Web exposes a Palette library. Let's see how we could use this library to create our own palette.
+As we've seen briefly in Step 6, to handle this feature Sugar-Web exposes a Palette library. Let's see how we could use this library and SugarToolitem to create our own palette.
 
 
 # Create the palette file
 
 To create a new palette, you should first create a new palette file. This file will contain the source code to handle palette behavior.
 
-So, create a new file named `pawnpalette.js` in the `Pawn.activity/lib` directory.
+So, create a new file named `pawnpalette.js` in the `js/palettes/` directory.
 
 ***Warning***: *The file should not be created in the `Pawn.activity/src` because palettes are considered to be new libraries.*
 
@@ -62,24 +62,24 @@ Here, the content is just a HTML div element with a simple string `'<strong>Hell
 
 Let's now integrate our new palette in the toolbar.
 
-It could be done by adding a new button in the toolbar as we've done in [step 3](tutorial_step3.md#Create-a-new-toolbar-button). But here we're going to redefine the behavior for the current **Add** button instead.
+It could be done by adding a new button in the toolbar as we've done in Step 3. But here we're going to redefine the behavior for the current **Add** button instead.
 
-To do that, let's update our `js/activity.js` file.
-
-As usual, to integrate new features, we will first update the dependencies list of libraries at the first line of the file.
-```js
-define(["sugar-web/activity/activity", ... ,"sugar-web/graphics/journalchooser","pawnpalette"], function (activity, ... ,presencepalette, datastore, journalchooser, pawnpalette) {
+As you have seen earlier, to integrate a palette, we will pass some attributes to the `sugar-toolitem`:
+```html
+<sugar-toolitem 
+  id="add-button" 
+  v-bind:title="l10n.stringAddPawn" 
+  palette-file="js/palettes/pawnpalette.js"
+  palette-class="PawnPalette"
+  palette-title="Add Pawn"
+></sugar-toolitem>
 ```
-This time you need to add the `pawnpalette` library created before. Add the string `"pawnpalette"` at the end of dependencies array and declare a new `pawnpalette` variable at the end of the function declaration.
+This time you need to pass the path to `pawnpalette` library created before. Pass the string "PawnPalette" to `palette-class` as it is the class we defined in the library. Give the `palette-title` as "Add Pawn".
 
-Let's now create the palette and associate it to the icon. Add the following code just before the `addEventListener('click',...)` call for the add button:
-```js
-var addpalette = new pawnpalette.PawnPalette(document.getElementById("add-button"), "Add pawn");
-```
-This source code call create the `PawnPalette` object and call the constructor with two parameters:
+This source code will create the `PawnPalette` object and call the constructor with two parameters:
 
  * the first one is the toolbar button to associate the palette. As we said, we're reusing our **Add** button.
- * the second one is the header for the palette. It's an optional parameter used to display a label at the beginning of the palette to explain the palette objective to the user. Here we set `"Add pawn"`.
+ * the second one is the header for the palette (`palette-title`). It's an optional parameter used to display a label at the beginning of the palette to explain the palette objective to the user.
 
 Let's run the Pawn activity. Now, when you click on the add toolbar button the palette is displayed.
 
@@ -87,7 +87,7 @@ Let's run the Pawn activity. Now, when you click on the add toolbar button the p
 
 Funny isn't it?
 
-As an exercise, look what happens when you do not provide a second parameter to the constructor.
+As an exercise, look what happens when you do not provide a palette title.
 
 
 # Customize the palette content
@@ -103,7 +103,7 @@ Here's the final look we would like to obtain:
 
 We would like to have 3 items each one that gives an opportunity to users to add a different number of pawns. To explore palette features each item will have a different UI: a text, an image, a text and an image combined.
 
-To do that, we're going to use a HTML file to describe the palette UI. So let's create a new file named `pawnpalette.html` in the `Pawn.activity/lib` directory, at the same place as the `pawnpalette.js`.
+To do that, we're going to use a HTML file to describe the palette UI. So let's create a new file named `pawnpalette.html` in the `js/palettes/` directory, at the same place as the `pawnpalette.js`.
 
 Put the content above in this new file:
 ```html
@@ -177,7 +177,7 @@ From the beginning of this lesson, the event handler for the **Add** button is s
 The first thing to do is to create a custom event for our palette. This event will be raise by the palette when the user will click one of the three items. Here's the source code to do that:
 ```js
 this.pawnClickEvent = document.createEvent('CustomEvent');
-this.pawnClickEvent.initCustomEvent('pawnClick', true, true, { count: 0 });
+this.pawnClickEvent.initCustomEvent('pawn-click', true, true, { count: 0 });
 ```
 This code should be add in the `pawnpalette.js` file, just after the `setContent` call. It will create a new HTML Custom Event named `pawnClick` with a parameter `count` set to 0 by default.
 
@@ -205,28 +205,40 @@ Finally, the listener calls the palette `popDown` method that, like you could ex
 
 That's all for the palette part. Let's now update the `js/activity.js` file to catch the new custom event.
 
-Replace the `document.getElementById("add-button").addEventListener(...)` call by this new source code:
+Modify the `onAddClick()` method to this new source code:
 ```js
-addpalette.addEventListener('pawnClick', function (event) {
-	for (var i = 0 ; i < event.count ; i++) {
-		pawns.push(currentenv.user.colorvalue);
-		drawPawns();
+onAddClick: function (event) {
+  for (var i = 0; i < event.count; i++) {
+    this.pawns.push(this.currentenv.user.colorvalue);
+    this.displayText = this.SugarL10n.get("Played", { name: this.currentenv.user.name });
 
-		document.getElementById("user").innerHTML = "<h1>"+webL10n.get("Played", {name:currentenv.user.name})+"</h1>";
-
-		if (presence) {
-			presence.sendMessage(presence.getSharedInfo().id, {
-				user: presence.getUserInfo(),
-				content: {
-					action: 'update',
-					data: currentenv.user.colorvalue
-				}
-			});
-		}
-	}
-});
+    if (this.SugarPresence && this.SugarPresence.isConnected()) {
+      var message = {
+        user: this.SugarPresence.getUserInfo(),
+        content: {
+          action: 'update',
+          data: this.currentenv.user.colorvalue
+        }
+      }
+      this.SugarPresence.sendMessage(message);
+    }
+  }
+},
 ```
-Shortly, it replaces the `click` listener on the **Add** button by a custom event `pawnClick` listener on the palette.
+And add the `palette-event` and listener to the tool item in `index.html`:
+```html
+<sugar-toolitem 
+  id="add-button" 
+  v-bind:title="l10n.stringAddPawn" 
+  palette-file="js/palettes/pawnpalette.js"
+  palette-class="PawnPalette"
+  palette-title="Add Pawn"
+  palette-event="pawn-click"
+  v-on:pawn-click="onAddClick"
+></sugar-toolitem>
+```
+
+Shortly, it replaces the `click` listener on the **Add** button by a custom event `pawn-click` listener on the palette.
 The source code for the listener is pretty the same as the old one. The only difference is a loop around the old source code. It repeats that as many times as the value of the count event property.
 
 Let's test it.

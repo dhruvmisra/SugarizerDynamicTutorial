@@ -54,7 +54,7 @@ All activities that could be shared have to include the Network palette in its t
 
 First start by adding a button for the network in the `index.html` file. We add it just after the existing `add` button.
 ```html
-<button class="toolbutton" id="network-button" title="Network"></button>
+<sugar-toolitem id="network-button" title="Network"></sugar-toolitem>
 ```
 We will now define this new button in the `css/activity.css` file. We define also the two buttons included in the palette. Note that all icons are already included in the `lib/sugar-web/graphics/icons/actions` directory.
 ```css
@@ -92,17 +92,19 @@ We will now define this new button in the `css/activity.css` file. We define als
 	border-radius: 5.5px;
 }
 ```
-The name "palette" refers to a popup menu in the toolbar. When the user clicks on the toolbar icon, the popup appears and display items inside - most often other buttons. To handle this feature Sugar-Web exposes a Palette library and, more precisely, a PresencePalette too. 
+The name "palette" refers to a popup menu in the toolbar. When the user clicks on the toolbar icon, the popup appears and display items inside - most often other buttons. To handle this feature Sugar-Web exposes a Palette library and, more precisely, a PresencePalette too. But the good news for Vue.js developers is that the `SugarPresence` component handles the integration of this functionality and let's you use it directly! You are of course encouraged to study the working of the component by looking at `js/components/SugarPresence.js`.
 
-As usual, to integrate this library, we will update the dependencies list at the first line of `activity/activity.js`.
-```js
-define(["sugar-web/activity/activity", "sugar-web/env", "sugar-web/graphics/icon", "webL10n","sugar-web/graphics/presencepalette"], function (activity, env, icon, webL10n, presencepalette) {
+To get the presence palette working, we will add some more attributes to the `network-button`, like this:
+```html
+<sugar-toolitem 
+  id="network-button" 
+  title="Network"
+  palette-file="sugar-web/graphics/presencepalette" 
+  palette-class="PresencePalette"
+></sugar-toolitem>
 ```
-This palette must be initialized in the code. You just have to call the PresencePalette constructor with the toolbar element. So add this line in the end of the require function of `activity/activity.js`:
-```js
-// Link presence palette
-var palette = new presencepalette.PresencePalette(document.getElementById("network-button"), undefined);
-```
+The `sugar-toolitem` component is smart, it can create a palette just by specifying the palette-defining file and a palette class.
+
 Let's test the result by launching our Pawn activity.
 
 ![](images/tutorial_step6_8.png)
@@ -131,90 +133,75 @@ Easy to understand isn't it?
 
 # Share the instance
 
-Now, let's update our Pawn activity to integrate presence. Start first by handling the click on the Share button. We will add a listener to handle `shared` event of the palette in the `activity/activity.js` file. 
+As usual, let's first include the magic component `SugarPresence`:
+```html
+<!-- Inside app element -->
+<sugar-presence ref="SugarPresence"></sugar-presence>
+
+<!-- After script loads -->
+<script src="js/components/SugarPresence.js"></script>
+```
+
+Now, let's update our Pawn activity to integrate presence. Start first by handling the click on the Share button. We will add three more attributes to the `network-button`:
+```html
+<sugar-toolitem 
+	id="network-button" 
+	title="Network"
+	palette-file="sugar-web/graphics/presencepalette" 
+	palette-class="PresencePalette"
+	palette-event="shared"
+	v-on:shared="SugarPresence.onShared"
+	v-if="SugarPresence"
+></sugar-toolitem>
+```
+The `presence-event` is the name of the event for which you wish to attach a listener for. This `SugarToolitem` detects this and automatically emits a Vue.js event with the same name, when this event is received from the palette. So, when we click the Share button, the `shared` event is received from the palette to the toolitem, and is then emitted as a Vue event to the instance. This will be handled by the `onShared()` method of the component.
+
+We will also use the `v-if` directive to render this button only `SugarPresence` component exists (This also makes sure `onShared()` is defined at the time of binding).
+
+Now that our activity is shared, we have to slightly update the Add button listener. Because now we should notify other users when a new pawn is played. Here's how the new listener will look like:
 ```js
-// Link presence palette
-var presence = null;
-var palette = new presencepalette.PresencePalette(document.getElementById("network-button"), undefined);
-palette.addEventListener('shared', function() {
-	palette.popDown();
-	console.log("Want to share");
-	presence = activity.getPresenceObject(function(error, network) {
-		if (error) {
-			console.log("Sharing error");
-			return;
+onAddClick: function () {
+	this.pawns.push(this.currentenv.user.colorvalue);
+	this.displayText = this.SugarL10n.get("Played", { name: this.currentenv.user.name });
+
+	if (this.SugarPresence && this.SugarPresence.isConnected()) {
+		var message = {
+			user: this.SugarPresence.getUserInfo(),
+			content: this.currentenv.user.colorvalue
 		}
-		network.createSharedActivity('org.sugarlabs.Pawn', function(groupId) {
-			console.log("Activity shared");
-		});
-		network.onDataReceived(onNetworkDataReceived);
-	});
-});
+		this.SugarPresence.sendMessage(message);
+	}
+},
 ```
-In this listener, we have to retrieve the presence object. As usual, it's exposed by the `activity` object. So you just need a call to `activity.getPresenceObject` method. If everything goes well, you will retrieve a presence object. That's a way to indicate that you're connected to a server.
 
-The `createSharedActivity` on this object allows you to create a new shared activity. You must pass as parameter the type of the activity so Sugarizer could display the right icon in the neighborhood view. Then you receive the unique identifier of the share in the `groupId` parameter of the callback.
+If the activity is connected (i.e. `SugarPresence` component exists and `SugarPresence.isConnected()` which tells if presence is initialized), we call the `sendMessage` method. As its name implies, `sendMessage` is the method to send a message to the server. The parameter is the message you want to send. We decided to split the message in two parts: information about `user` that sent the message and the `content`, the user color. The user info is get from SugarPresence component using the `getUserInfo()` call: it will retrieve an object with `name`, `networkId` and `colorvalue`.
 
-Finally, we register a callback to handle the message received, with a call to `onDataReceived` method. We will have a look on this callback later.
+That's all we need to create a shared activity and let it appear on the Neighborhood view of other users. We have now to handle what happens when a user clicks on the Join menu. In that case, your activity is automatically open by Sugarizer with a specific parameter in the environment. Another situation where component makes the life easier, it handles the existence of this parameter (`shareId`) and automatically intializes the presence object.
 
-Now that our activity is shared, we have to slightly update the Plus button listener. Because now we should notify other users when a new pawn is played. Here's how the new listener will look like:
+There are 2 important events that you need to handle from the `SugarPresence` instance: `data-received` and `user-changed`. We will create 2 methods to handle these events:
 ```js
-// Handle click on add
-document.getElementById("add-button").addEventListener('click', function (event) {
+onNetworkDataReceived(msg) {
+	// Handles the data-received event
+},
 
-	pawns.push(currentenv.user.colorvalue);
-	drawPawns();
-
-	document.getElementById("user").innerHTML = "<h1>"+webL10n.get("Played", {name:currentenv.user.name})+"</h1>";
-
-	if (presence) {
-		presence.sendMessage(presence.getSharedInfo().id, {
-			user: presence.getUserInfo(),
-			content: currentenv.user.colorvalue
-		});
-	}
-});
+onNetworkUserChanged(msg) {
+	// Handles the user-changed event
+},
 ```
 
-If the activity is connected (i.e. presence is not null), we call the `sendMessage` method. As its name implies, `sendMessage` is the method to send a message to the server. The first parameter of this method is the id of the share. We could retrieve this id from the presence object by `getSharedInfo().id`. The second parameter is just the message. We decided to split the message in two parts: information about `user` that sent the message and the `content`, the user color. The user info is get from presence object using the `getUserInfo()` call: it will retrieve an object with `name`, `networkId` and `colorvalue`.
+Now bind these to the event directives:
+```html
+<sugar-presence ref="SugarPresence" v-on:data-received="onNetworkDataReceived" v-on:user-changed="onNetworkUserChanged"></sugar-presence>
+```
 
-That's all we need to create a shared activity and let it appear on the Neighborhood view of other users. We have now to handle what happens when a user clicks on the Join menu. In that case, your activity is automatically open by Sugarizer with a specific parameter in the environment. So we will update the `getEnvironment` call in the `activity/activity.js` file to handle this case:
-
+The `onNetworkDataReceived` method each time data is receieved from any other connected user on that activity.
 ```js
-env.getEnvironment(function(err, environment) {
-	currentenv = environment;
-
-	// Set current language to Sugarizer
-	...
-
-	// Load from datatore
-	if (!environment.objectId) {
-		...
-	}
-
-	// Shared instances
-	if (environment.sharedId) {
-		console.log("Shared instance");
-		presence = activity.getPresenceObject(function(error, network) {
-			network.onDataReceived(onNetworkDataReceived);
-		});
-	}
-});
+onNetworkDataReceived(msg) {
+	this.pawns.push(msg.content);
+	this.displayText = this.SugarL10n.get("Played", { name: msg.user.name });
+},
 ```
-What we've added in this source code is: if `environment.sharedId` is not null - i.e. the activity was launched from the Join menu - we get the presence object and declare the callback to process data received. 
-
-The `onNetworkDataReceived` callback is the same one we used previously. So it's a good idea now to see what this callback should do.
-```js
-var onNetworkDataReceived = function(msg) {
-	if (presence.getUserInfo().networkId === msg.user.networkId) {
-		return;
-	}
-	pawns.push(msg.content);
-	drawPawns();
-	document.getElementById("user").innerHTML = "<h1>"+webL10n.get("Played", {name:msg.user.name})+"</h1>";
-}; 
-```
-This callback is called each time a message is received from the server. The message is the parameter for the callback. We first test the `networkId` in this message to ignore the message that we sent ourselves. Then we add the message `content` (i.e. colors for the user sending the message) to our `pawns` array and redraw the board with the `drawPawns()` call. Finally, we update the welcome message to give the player's name.
+We add the message `content` (i.e. colors for the user sending the message) to our `pawns` array. Then, we update the `displayText` to give the player's name.
 
 Let's try if everything works. From the Michaël browser, launch a new Pawn activity and share it with the network menu.
 
@@ -248,87 +235,64 @@ It's like initial plays from Michaël was lost.
 
 This issue is related to the way of handling users that join the activity. Currently nothing is done to give them the initial board state. So they only saw new changes on the board. It could make sense for a chat activity: users who join a chat could not be able to see past discussions. But for our activity, it's not a good thing.
 
-To fix it, let's subscribe to a new presence callback named `onSharedActivityUserChanged`. So we will add two times - in `shared` listener and in `getEnvironment` under `network.onDataReceived` call - the following line in `activity/activity.js` file:
+To fix it, let's observe the `onNetworkUserChanged` method:
 ```js
-network.onSharedActivityUserChanged(onNetworkUserChanged);
+onNetworkUserChanged: function(msg) {
+	console.log(msg);
+}
 ```
-Here's a first simple implementation for this new callback:
-```js
-var onNetworkUserChanged = function(msg) {
-	console.log("User "+msg.user.name+" "+(msg.move == 1 ? "join": "leave"));
-};
-```
-The `onSharedActivityUserChanged` message is sent automatically by the server when the subscriber's list for a shared activity has changed. You will receive in the message a `move` field telling if the user has joined (the `move` value is `1`) or left (the `move` value is `-1`). And you will receive in the `user` field of the message informations (`name`, `networkId` and `colorvalue`) about the user. 
+The message parameter here is sent automatically by the server when the subscriber's list for a shared activity has changed. You will receive in the message a `move` field telling if the user has joined (the `move` value is `1`) or left (the `move` value is `-1`). And you will receive in the `user` field of the message informations (`name`, `networkId` and `colorvalue`) about the user. 
 
-The `onSharedActivityUserChanged` message is useful to display a list of users currently connected, and for example displaying this list. Thanks to this message we will be able too to fix our current issue.
+This message is useful to display a list of users currently connected, and for example displaying this list. Thanks to this message we will be able to fix our current issue.
 
 The idea is to identify the host for the share (Michaël in our sample). When a new subscriber joins the share, the host - and only the host - send to the new subscriber a message with the current board state.
 But because the current message contains only the color for the added pawn, we have to create a new type of message for that. Here's the suggested implementation to do that.
 
 First let's modify the current send message call to integrate the 'update' message type to keep compatibility with current implementation:
 ```js
-presence.sendMessage(presence.getSharedInfo().id, {
-	user: presence.getUserInfo(),
-	content: {
-		action: 'update',
-		data: currentenv.user.colorvalue
+if (this.SugarPresence && this.SugarPresence.isConnected()) {
+	var message = {
+		user: this.SugarPresence.getUserInfo(),
+		content: {
+			action: 'update',
+			data: this.currentenv.user.colorvalue
+		}
 	}
-});
+	this.SugarPresence.sendMessage(message);
+}
 ```
 Let's tell the host to send the new 'init' message type when the subscriber list change:
 ```js
-var onNetworkUserChanged = function(msg) {
-	if (isHost) {
-		presence.sendMessage(presence.getSharedInfo().id, {
-			user: presence.getUserInfo(),
+onNetworkUserChanged: function(msg) {
+	// Handling only by the host
+	if (this.SugarPresence.isHost) {
+		this.SugarPresence.sendMessage({
+			user: this.SugarPresence.getUserInfo(),
 			content: {
 				action: 'init',
-				data: pawns
+				data: this.pawns
 			}
 		});
 	}
-	console.log("User "+msg.user.name+" "+(msg.move == 1 ? "join": "leave"));
-}; 
+},
 ```
-Then we need to update the `onNetworkDataReceived` callback to handle the new message structure:
+Here you see a new property being used: `isHost` is a boolean property which stores if the current user is the host of the activity or not. The component handles this for you as well.
+
+Finally, we need to update the `onNetworkDataReceived` method to handle the new message structure:
 ```js
-var onNetworkDataReceived = function(msg) {
-	if (presence.getUserInfo().networkId === msg.user.networkId) {
-		return;
-	}
+onNetworkDataReceived: function(msg) {
 	switch (msg.content.action) {
 		case 'init':
-			pawns = msg.content.data;
-			drawPawns();
+			this.pawns = msg.content.data;
 			break;
 		case 'update':
-			pawns.push(msg.content.data);
-			drawPawns();
-			document.getElementById("user").innerHTML = "<h1>"+webL10n.get("Played", {name:msg.user.name})+"</h1>";
+			this.pawns.push(msg.content.data);
+			this.displayText = this.SugarL10n.get("Played", { name: msg.user.name });
 			break;
 	}
-};
+}
 ```
-Finally we will implement host detection with a new `isHost` variable. The host is the one who created the share:
-```js
-var isHost = false;
-palette.addEventListener('shared', function() {
-	palette.popDown();
-	console.log("Want to share");
-	presence = activity.getPresenceObject(function(error, network) {
-		if (error) {
-			console.log("Sharing error");
-			return;
-		}
-		network.createSharedActivity('org.sugarlabs.Pawn', function(groupId) {
-			console.log("Activity shared");
-			isHost = true;
-		});
-		network.onDataReceived(onNetworkDataReceived);
-		network.onSharedActivityUserChanged(onNetworkUserChanged);
-	});
-});
-```
+
 Let's repeat the test by launching the activity from Michaël's browser with an initial content (for example from the Journal).
 
 ![](images/tutorial_step6_15.png)

@@ -44,13 +44,13 @@ You could download it [here](images/insert-picture.svg). Right-click on it and t
 
 Then, let's add our new button. You already know how to do it because you've done it during Step 3. You have to update the toolbar section of the `index.html` file for your activity. Add a `button` tag with the Sugar-Web `toolbutton` class. Here is the result:
 ```html
-<div id="main-toolbar" class="toolbar">
-	...
+<sugar-toolbar ref="SugarToolbar">
+  ...
 
-	<button class="toolbutton" id="picture-button" title="Change background"></button>
-
-	...
-</div>
+  <sugar-toolitem id="insert-button" title="Change Background"></sugar-toolitem>
+  
+  ...
+</sugar-toolbar>
 ```
 
 We will now associate the icon to this new button. This association should be done in the `css/activity.css` file. Add these lines at the end of the file.
@@ -68,29 +68,28 @@ Let's run the activity. Good job! the new button is here:
 
 It's time now to add source code to display Journal chooser and integrate our background.
 
+The `journalchooser` has been baked into the `SugarJournal` component too! Hurray! Let's see how to utilize it.
 
-As usual, to integrate new features, we will update the dependencies list of libraries at the first line of `js/activity.js`.
-```js
-define(["sugar-web/activity/activity", ... ,"sugar-web/graphics/presencepalette", "sugar-web/datastore","sugar-web/graphics/journalchooser"], function (activity, ... ,presencepalette, datastore, journalchooser) {
+First add a click listener to the picture-button.
+```html
+<sugar-toolitem id="insert-button" v-on:click="insertBackground" title="Change Background"></sugar-toolitem>
 ```
-This time you need to add two libraries:
-
-* `sugar-web/datastore` the library for all datastore features
-* `sugar-web/graphics/journalchooser` the library to display the Journal chooser dialog.
-
-Let's now handle click on the new button to display the Journal chooser. Like others buttons in our activity, 
- we have to add the event listener:
+And define the following method in `js/activity.js`:
 ```js
-document.getElementById("picture-button").addEventListener('click', function (e) {
-	journalchooser.show(function (entry) {
-		// Do nothing for the moment
-	}, { mimetype: 'image/png' }, { mimetype: 'image/jpeg' });
-});
+insertBackground: function () {
+  var filters = [
+    { mimetype: 'image/png' }, 
+    { mimetype: 'image/jpeg' }
+  ];
+  this.$refs.SugarJournal.insertFromJournal(filters, function (data, metadata) {
+    // Do nothing at the moment
+  })
+},
 ```
- This source code call the `show` method of the `journalchooser` library. This method take two parameters:
- 
- * the first one is the callback called when the user click on the moment. For the moment, we're leave it empty
- * the second one is a list of filters to identify what type of Journal entries you're looking for. Here we're looking for images, so we set `mimetype` equal to `image/png` or `image/jpeg`. But it's possible too to ask for items from a specific activity by using something like `{ activity: 'org.sugarlabs.Pawn'}`.
+This source code calls the `insertFromJournal` method of the `SugarJournal` component. This method take two parameters:
+
+* the first one is an array of filters to identify what type of Journal entries you're looking for. Here we're looking for images, so we set `mimetype` equal to `image/png` or `image/jpeg`. But it's possible too to ask for items from a specific activity by using something like `{ activity: 'org.sugarlabs.Pawn'}`.
+* the second one is the callback called when the user clicks on some media element. For the moment, we're leave it empty.
 
 Let's run again the activity. Now, when you click on the new toolbar button the Journal chooser is displayed and the list contains our Moon image.
 
@@ -115,31 +114,24 @@ The file is now into the Journal.
 
 ![](images/tutorial_step7_9.png)
 
-We will now ready to add the source code to change the background. Here's the new way to call the `journalchooser.show` method:
+We are now ready to add the source code to change the background. Here's the new way to define the `insertFromJournal` callback:
 ```js
-journalchooser.show(function (entry) {
-	// No selection
-	if (!entry) {
-		return;
-	}
-	// Get object content
-	var dataentry = new datastore.DatastoreObject(entry.objectId);
-	dataentry.loadAsText(function (err, metadata, data) {
-		document.getElementById("canvas").style.backgroundImage = "url('"+data+"')";
-	});
-}, { mimetype: 'image/png' }, { mimetype: 'image/jpeg' });
+insertBackground: function () {
+  var filters = [
+    { mimetype: 'image/png' }, 
+    { mimetype: 'image/jpeg' }
+  ];
+  this.$refs.SugarJournal.insertFromJournal(filters, function (data, metadata) {
+    document.getElementById("app").style.backgroundImage = `url(${data})`;
+  })
+},
 ```
-When the callback is called, if the `entry` parameter is `null` it's mean that the dialog box was closed without selection. 
-Else the `entry` parameter contains metadata for the selected item. So we can create a `DatastoreObject` to handle the object and specifically load its content using the `loadAsText` method. We've already seen this method in [step 4](tutorial_step4.md) but this time it's not to load the Journal item associated with the activity but to load another Journal item.
-
-The callback for the `loadAsText` method receive the content of the item into the `data` parameter. In the case of an image, it's a base64 encoding of the image. Something like: 
+The callback method receives the content of the item into the `data` parameter. In the case of an image, it's a base64 encoding of the image. Something like: 
 ```js
 data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4wIRCSUFWSm...
 ```
 This format is natively supported in HTML, so we just need to set this value into the `background-image` style of the canvas element and voilà!
-```js
-document.getElementById("canvas").style.backgroundImage = "url('"+data+"')";
-```
+
 I'm sure you can't wait to test it. Relaunch the Pawn activity, click on the button to show the dialog then click on the checkboard.png image. Here what happens:
 
 ![](images/tutorial_step7_10.png)

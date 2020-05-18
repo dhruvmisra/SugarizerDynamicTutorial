@@ -6,7 +6,6 @@
       :selected="selectedLanguage"
       @languageSelected="switchLanguage"
     />
-    selectedLanguage: {{selectedLanguage}}
     <StepSelector :stepNumbers="stepNumbers" :selected="selectedStep" @stepSelected="switchStep" />
     <Step
       :step="stepToShow"
