@@ -48,7 +48,7 @@ To store the context, we have to handle the **datastore**. The datastore is the 
 First include the `SugarJournal` component in your activity and instantiate it inside the app element.
 ```html
     ...
-    <sugar-activity ref="SugarActivity" v-on:loaded="initializeActivity"></sugar-activity>
+    <sugar-activity ref="SugarActivity" v-on:initialized="initialized"></sugar-activity>
     <sugar-journal ref="SugarJournal"></sugar-journal>
   </div>
 

@@ -125,18 +125,6 @@ Replace these few lines by the following:
 ```
 We'll have a `div` and heading inside it to show the welcome message dynamicaaly using a reactive Vue.js data property `displayText`.
 
-Also notice the component instance below it. It is handling an event **loaded** using a method `initializeActivity()`.
-```html
-		...
-		<sugar-activity ref="SugarActivity" v-on:loaded="initializeActivity"></sugar-activity>
-	</div>
-
-	<script src="js/components/SugarActivity.js"></script>
-	<script src="js/components/SugarToolbar.js"></script>
-	<script src="js/activity.js"></script>
-</body>
-```
-
 Now, let's study the file `js/activity.js`. It's really the heart of your new activity. The current implementation is:
 ```js
 // Rebase require directory
@@ -150,53 +138,21 @@ requirejs.config({
 // Vue main app
 var app = new Vue({
 	el: '#app',
-	data: {
-		displayText: ''
-	},
-	methods: {
-		initializeActivity: function () {
-			// Initialize Sugarizer
-			this.$refs.SugarActivity.setup();
-		},
-	}
+	data: {},
+	methods: {}
 });
-
 ```
 These lines rely on the framework **require.js** that is used by Sugar-Web to handle JavaScript libraries dependencies. You could read more about the **require.js** framework [here](http://www.requirejs.org/). The first block of code is used to configure `requirejs` baseUrl to be the `lib` directory to load our dependencies and also to add a path to `js` directory. This is followed by a new Vue.js instance with `el: '#app'` signifying that the `#app` element is being controlled by Vue.js. Make sure to add all your components/properties inside this element.
 
-The method `initializeActivity()` is called automatically when SugarActivity component has loaded. For once let's peek into the SugarActivity component to understand what's happening behind the scenes.
+For once let's peek into the SugarActivity component to understand what's happening behind the scenes.
 
 > #### Understanding the working
 > Open `js/components/SugarActivity.js` and observe the mounted() lifecycle hook. It uses `requirejs` to load the `lib/sugar-web/activity/activity` and `lib/sugar-web/env` and save it as a data property. It also has the method `setup` which calls the setp function for the activity. Refer to requirejs docs to have a better understanding but shortly, there are only two functions to understand: `define` and `require`:
 > * `define` is a way to define a new module and express its dependencies.
 > * `requirejs` is pretty the same. It tells to **require**: run the following function but before that, load dependencies and give me a reference to it. We have called it in the `mounted()` hook to run it after DOM has loaded.
 >
-> Once the dependencies have loaded and data values have been set, the `loaded` event is emitted after which the activity can be setup.
+> Once the dependencies have loaded, data values have been set and activity has setup, the `initialized` event is emitted.
 
-Then comes the most important line of our activity:
-```js
-// Initialize Sugarizer
-this.$refs.SugarActivity.setup();
-```
-It's a call to the `setup` method of SugarActivity which inturn is a cal to the `setup` method of the Sugar-Web activity library.
-
-If you have to keep only one line in your activity, keep that one because it's responsible for all the magic inside Sugarizer: it initializes Datastore, Presence and the Sugarizer UI. A classical error for a beginner in Sugar-Web development is to forget this call. Let's do it by commenting the line:
-```js	
-// Initialize Sugarizer
-//this.$refs.SugarActivity.setup();
-```
-Then run again your new activity. Here's what happens:
-
-
-![](images/tutorial_step2_3.png)
-
-Ooops! Colors for our nice icons have disappeared and when you click on the Stop button nothing happens. Clearly, you've broken the Sugarizer logic :-(
-
-So uncomment this precious line and never forget to call it again!
-```js
-// Initialize Sugarizer
-this.$refs.SugarActivity.setup();
-```
 Now, to display our welcome message, we will use the user's name.
 
 First add a data property `displayText` to the data object.
@@ -207,14 +163,26 @@ data: {
 ```
 
 To get the user's name we're going to use another Sugar-Web library named **env**. This library contains a very interesting method `getEnvironment`. This method allows you to retrieve all users settings: name, preferred colours, language, favorites, etc.
-You can call this method directly from the SugarActivity component reference. So add a call to this method to retrieve the user name:
-```js
-// Initialize Sugarizer
-this.$refs.SugarActivity.setup();
+You can call this method directly from the `SugarActivity` component. 
 
-var environment = this.$refs.SugarActivity.getEnvironment();
-this.displayText = "Hello " + environment.user.name + "!";
-});
+Before using any resources of the activity, we must wait for the `initialized` event from the `SugarActivity` component.
+
+So let's first add a click listener method to the directive of `SugarActivity`:
+```html
+<sugar-activity ref="SugarActivity" v-on:initialized="initialized"></sugar-activity>
+```
+
+And define the method to retrieve the user name and update `displayText`:
+```js
+...
+methods: {
+	initialized: function () {
+		// Sugarizer initialized
+		var environment = this.$refs.SugarActivity.getEnvironment();
+		this.displayText = "Hello " + environment.user.name + "!";	
+	}
+}
+...
 ```
 Being a Vue.js reactive property, `displayText` will automatically be rendered to the screen on update. That's all. Run the activity again.
 

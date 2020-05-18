@@ -50,7 +50,6 @@ Use your text editor to change the **title** tag of `index.html` to `Pawn Activi
 	<link rel="stylesheet" media="screen and (device-width: 1200px) and (device-height: 900px)"
 		href="lib/sugar-web/graphics/css/sugar-200dpi.css">
 	<link rel="stylesheet" href="css/activity.css">
-	<link rel="stylesheet" href="css/libnotify.css">
 	<script src="lib/vue.min.js"></script>
 	<script src="lib/require.js"></script>
 </head>

@@ -80,16 +80,14 @@ data: {
   displayText: ''
 },
 methods: {
-  initializeActivity: function () {
-    // Initialize Sugarizer
-    this.$refs.SugarActivity.setup();
-
+  initialized: function () {
+    // Sugarizer initialized
     this.currentenv = this.$refs.SugarActivity.getEnvironment();
     this.displayText = "Hello " + this.currentenv.user.name + "!";	
   },
 }
 ```
-Then just after the `initializeActivity`, we will add the following method to handle click event and a new `pawns` array:
+Then just after the `initialized`, we will add the following method to handle click event and a new `pawns` array:
 ```js
 data: {
   ...

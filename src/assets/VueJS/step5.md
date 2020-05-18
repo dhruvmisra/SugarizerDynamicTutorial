@@ -143,7 +143,7 @@ One point however: we need to wait to initialize strings that the `locale.ini` i
 
 So we will now initialize the welcome message in the `localized` event listener, which we add in `js/activity.js` file:
 ```js
-initializeActivity: function () {
+initialized: function () {
   // Initialize Sugarizer
   this.$refs.SugarActivity.setup();
   this.currentenv = this.$refs.SugarActivity.getEnvironment();
@@ -158,7 +158,7 @@ localized: function () {
   this.SugarL10n.localize(this.l10n);
 },
 ```
-***NOTE:*** *We define the event listener using `$on` in `initializeActivity()` rather than as a `v-on` directive on the `<sugar-localized>` tag to maintain the flow of the activity. Defining the event listener as a directive might cause the `localized()` method to be called BEFORE the `currentenv` is set. This will lead to undesired results.*
+***NOTE:*** *We define the event listener using `$on` in `initialized()` rather than as a `v-on` directive on the `<sugar-localized>` tag to maintain the flow of the activity. Defining the event listener as a directive might cause the `localized()` method to be called BEFORE the `currentenv` is set. This will lead to undesired results.*
 
 Everything is now ready to handle localization.
 
