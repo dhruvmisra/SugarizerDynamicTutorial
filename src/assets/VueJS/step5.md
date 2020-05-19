@@ -158,7 +158,7 @@ localized: function () {
   this.SugarL10n.localize(this.l10n);
 },
 ```
-***NOTE:*** *We define the event listener using `$on` in `initialized()` rather than as a `v-on` directive on the `<sugar-localized>` tag to maintain the flow of the activity. Defining the event listener as a directive might cause the `localized()` method to be called BEFORE the `currentenv` is set. This will lead to undesired results.*
+***NOTE:*** *We define the event listener using `$on` in `initialized()` rather than as a `v-on` directive on the `<sugar-localization>` tag to maintain the flow of the activity. Defining the event listener as a directive might cause the `localized()` method to be called BEFORE the `currentenv` is set. This will lead to undesired results.*
 
 Everything is now ready to handle localization.
 
