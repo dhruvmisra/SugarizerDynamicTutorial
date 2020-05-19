@@ -1,62 +1,8 @@
 <template>
   <div id="app">
-    <h1 class="heading">Sugarizer Dynamic Tutorial</h1>
-    <LanguageSelector
-      :languages="languages"
-      :selected="selectedLanguage"
-      @languageSelected="switchLanguage"
-    />
-    <StepSelector :stepNumbers="stepNumbers" :selected="selectedStep" @stepSelected="switchStep" />
-    <Step
-      :step="stepToShow"
-      :selectedStep="selectedStep"
-      :language="selectedLanguage"
-    />
-    <StepSelector :stepNumbers="stepNumbers" :selected="selectedStep" @stepSelected="switchStep" />
+    <router-view/>
   </div>
 </template>
-
-<script>
-import Step from "./components/Step.vue";
-import LanguageSelector from "./components/LanguageSelector.vue";
-import StepSelector from "./components/StepSelector.vue";
-import Tutorial from "@/tutorial.json";
-
-export default {
-  name: "App",
-  components: {
-    Step,
-    LanguageSelector,
-    StepSelector
-  },
-  data: () => ({
-    tutorial: null,
-    languages: ["VanillaJS", "VueJS"],
-    selectedLanguage: "VanillaJS",
-    selectedStep: "0"
-  }),
-  computed: {
-    stepNumbers() {
-      return Object.keys(this.tutorial.steps);
-    },
-    stepToShow() {
-      return this.tutorial.steps[this.selectedStep];
-    }
-  },
-  created() {
-    let vm = this;
-    this.tutorial = Tutorial;
-  },
-  methods: {
-    switchLanguage(language) {
-      this.selectedLanguage = language;
-    },
-    switchStep(stepNum) {
-      this.selectedStep = stepNum;
-    }
-  }
-};
-</script>
 
 <style>
 body {

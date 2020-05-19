@@ -19,6 +19,7 @@ export default {
 <style scoped>
 .step-selection {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
 }
 .btn-step {

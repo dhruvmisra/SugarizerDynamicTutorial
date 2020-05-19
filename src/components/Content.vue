@@ -33,6 +33,11 @@ export default {
     });
 
     this.parseContent();
+    let vm = this;
+    this.$nextTick(() => {
+      let el = document.getElementById(vm.$route.hash.split('#')[1]);
+      if(el) el.scrollIntoView();
+    });
   },
   methods: {
     doRenderCode(code, lang) {
